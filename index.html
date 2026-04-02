@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>IGNITE | Culto Jóvenes & Adolescentes • Viernes 8PM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 10% 20%, #0a0f1e, #03060c);
+            color: #f0f3fa;
+            line-height: 1.4;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(ellipse at 40% 50%, rgba(76, 29, 149, 0.25), transparent 70%);
+        }
+
+        .bg-glow::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: repeating-linear-gradient(45deg, rgba(255, 50, 150, 0.02) 0px, rgba(255, 50, 150, 0.02) 2px, transparent 2px, transparent 8px);
+            animation: drift 50s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(20px, 20px); }
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .glass-card {
+            background: rgba(15, 25, 45, 0.55);
+            backdrop-filter: blur(14px);
+            border-radius: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 100, 200, 0.4);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 2.5rem 1rem 2rem;
+            margin-bottom: 3rem;
+            border-radius: 3rem;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(20, 10, 40, 0.7));
+            backdrop-filter: blur(8px);
+        }
+
+        .badge {
+            display: inline-block;
+            background: #ff3b6f;
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 12px #ff3b6f;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFFFFF, #ffb3d9, #c084fc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 650px;
+            margin: 1rem auto 0;
+            opacity: 0.9;
+        }
+
+        .grid-invite {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 800px) {
+            .grid-invite {
+                grid-template-columns: 1fr;
+                gap: 1.8rem;
+            }
+        }
+
+        .info-card, .surprise-card {
+            padding: 2rem 1.8rem;
+        }
+
+        .info-card h2, .surprise-card h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            border-left: 4px solid #ff3b6f;
+            padding-left: 1rem;
+        }
+
+        .time-detail {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 2rem;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .day {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: #ffbc6e;
+        }
+
+        .hour {
+            font-size: 2.2rem;
+            font-weight: 800;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .countdown {
+            background: #00000055;
+            border-radius: 2rem;
+            padding: 1rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .time-block {
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 1.5rem;
+            padding: 0.5rem 0.8rem;
+            min-width: 70px;
+            text-align: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .time-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffb347;
+        }
+
+        .time-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-invite {
+            background: linear-gradient(95deg, #ff3b6f, #b34180);
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: 1rem;
+            font-family: inherit;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-invite:hover {
+            transform: scale(1.02);
+            background: linear-gradient(95deg, #ff527f, #c84e97);
+            box-shadow: 0 0 18px #ff3b6f;
+        }
+
+        /* --- Estilos para el modal de registro dinámico --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.2s;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: rgba(20, 25, 45, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            padding: 2rem;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffb86b, #ff6b9d);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .modal-card p {
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .modal-card input {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 60px;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 1rem;
+            margin-bottom: 1.2rem;
+            outline: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .modal-card input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            background: #ff3b6f;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: rgba(100,100,120,0.6);
+        }
+
+        .modal-btn:hover {
+            transform: scale(1.02);
+            filter: brightness(1.05);
+        }
+
+        .success-message {
+            background: #1f3a2fcc;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            margin-top: 1rem;
+            animation: fadePop 0.4s;
+            font-weight: bold;
+            color: #c3ffb2;
+        }
+
+        .surprise-box {
+            background: rgba(255, 215, 0, 0.08);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1rem 0;
+            border: 1px dashed #ffb86b;
+        }
+
+        .gift-icon {
+            font-size: 4rem;
+            cursor: pointer;
+            transition: transform 0.2s cubic-bezier(0.34, 1.2, 0.8, 1);
+            display: inline-block;
+        }
+
+        .gift-icon:hover {
+            transform: scale(1.2) rotate(5deg);
+            filter: drop-shadow(0 0 12px gold);
+        }
+
+        #surpriseMessage {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: #1f1b2ecc;
+            padding: 1rem;
+            border-radius: 1.5rem;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+        }
+
+        .hidden-message {
+            display: none;
+        }
+
+        .show-message {
+            display: block;
+            animation: fadePop 0.4s ease;
+        }
+
+        @keyframes fadePop {
+            0% { opacity: 0; transform: scale(0.95);}
+            100% { opacity: 1; transform: scale(1);}
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin: 3rem 0 2rem;
+            padding: 2rem;
+            border-radius: 2rem;
+            background: radial-gradient(ellipse at 50% 30%, rgba(156, 80, 255, 0.2), transparent);
+        }
+
+        .welcome-section h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .highlight {
+            color: #ffcc66;
+            font-weight: bold;
+        }
+
+        .footer-quote {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .toast-notify {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f1a2e;
+            backdrop-filter: blur(12px);
+            color: #ffdfa5;
+            padding: 0.8rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            z-index: 1000;
+            border: 1px solid rgba(255,255,200,0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease forwards;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; bottom: 0; }
+            to { opacity: 1; bottom: 20px; }
+        }
+
+        @media (max-width: 550px) {
+            .container {
+                padding: 1rem 1rem 2rem;
+            }
+            .time-number {
+                font-size: 1.5rem;
+            }
+            .info-card h2, .surprise-card h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-glow"></div>
+<div class="container">
+    <div class="hero glass-card">
+        <div class="badge">
+            <i class="fas fa-fire"></i> MINISTERIO DE JOVENES
+        </div>
+        <h1>UN TIEMPO QUE PUEDE <br>CAMBIARLO TODO</h1>
+        <p>✨Con amor eterno te he amado; por tanto,  <br> 
+        te prolongué mi misericordia (jeremías 31:3)✨</p>
+    </div>
+
+    <div class="grid-invite">
+        <div class="info-card glass-card">
+            <h2><i class="fas fa-calendar-alt" style="color:#ff6b9d;"></i> La cita semanal</h2>
+            <div class="time-detail">
+                <div class="day"><i class="fas fa-moon"></i> VIERNES · 8:00 PM</div>
+                <div class="hour"><i class="fas fa-clock"></i> 20:00 hrs</div>
+                <div style="margin-top: 8px;"><i class="fas fa-map-marker-alt"></i> LADP · Asambleas de Dios -Pacaypite</div>
+            </div>
+            <div class="countdown">
+                <strong><i class="fas fa-hourglass-half"></i> ¡Faltan para el próximo viernes!</strong>
+                <div class="countdown-timer" id="countdownTimer">
+                    <div class="time-block"><span class="time-number" id="days">00</span><div class="time-label">Días</div></div>
+                    <div class="time-block"><span class="time-number" id="hours">00</span><div class="time-label">Horas</div></div>
+                    <div class="time-block"><span class="time-number" id="minutes">00</span><div class="time-label">Minutos</div></div>
+                    <div class="time-block"><span class="time-number" id="seconds">00</span><div class="time-label">Segundos</div></div>
+                </div>
+            </div>
+            <button class="btn-invite" id="rsvpBtn"><i class="fas fa-envelope-open-text"></i> ¡Confirmo mi asistencia!</button>
+            <p style="margin-top: 1rem; font-size: 0.85rem; text-align: center;">🎁 Trae a un amigo y recibe sorpresa extra (para todos)</p>
+        </div>
+
+        <div class="surprise-card glass-card">
+            <h2><i class="fas fa-gift" style="color:#f3b33d;"></i> Sorpresa oculta</h2>
+            <div class="surprise-box">
+                <div class="gift-icon" id="surpriseTrigger">
+                    <i class="fas fa-gift fa-4x"></i>
+                    <p style="font-size: 0.9rem; margin-top: 8px;">¡Tócame o haz clic!</p>
+                </div>
+                <div id="surpriseMessage" class="hidden-message"></div>
+                <p style="margin-top: 1rem; font-size: 0.9rem;"><i class="fas fa-music"></i> + Sorpresas para compartir: premios misteriosos, dinámicas y regalos para todos.</p>
+            </div>
+            <div style="margin-top: 1rem;">
+                <p><i class="fas fa-star-of-life" style="color:#ffb347;"></i> <strong>¿No te quedes en casa ?</strong>...</p>
+            </div>
+            <button id="extraSurpriseBtn" class="btn-invite" style="background: linear-gradient(95deg, #7047eb, #b74eff); margin-top: 1rem;"><i class="fas fa-hand-sparkles"></i> Activar Sorpresa Relámpago</button>
+        </div>
+    </div>
+
+    <div class="welcome-section glass-card" style="padding: 2rem;">
+        <h3><i class="fas fa-heart" style="color:#ff7b9c;"></i> Una invitación muy especial</h3>
+        <p style="font-size: 1.2rem; max-width: 700px; margin: 1rem auto;">Este <span class="highlight">VIERNES 8:00 PM</span> --Prepárate para:</p>
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin: 1.5rem 0;">
+            <span style="background: #2a1e44; border-radius: 60px; padding: 0.5rem 1rem;"><i class="fas fa-drumstick-bite"></i> Sorpresas dulces</span>
+            <span style="background: #2a1e44; border-radius: 60px; padding: 0.5rem 1rem;"><i class="fas fa-microphone-alt"></i> Momento de reflexión</span>
+            <span style="background: #2a1e44; border-radius: 60px; padding: 0.5rem 1rem;"><i class="fas fa-users"></i> Actividades grupales</span>
+            <span style="background: #2a1e44; border-radius: 60px; padding: 0.5rem 1rem;"><i class="fas fa-ticket-alt"></i> Delicioso compartir</span>
+        </div>
+        <p style="font-size: 1.1rem; font-weight: 500;">✨ <strong>“ Culto de jóvenes, un encuentro que marcará la difrencia”</strong> ✨<br>
+        ¡Te esperamos con los brazos abiertos! Trae tus amigos y prepárate para una noche inolvidable llena de sorpresas para todos.</p>
+        <div style="margin-top: 1.5rem;">
+            <i class="fas fa-hand-peace"></i> Entrada libre | Edad: 13 a 25 años | Los premios serán sorpresa y se compartirán para todos
+        </div>
+    </div>
+
+    <div class="footer-quote">
+        <i class="fas fa-sync-alt"></i> viernes 8.00 PM · Lugar: LADP · <i class="fab fa-instagram"></i> Ministerio de jóvenes
+    </div>
+</div>
+
+<!-- Modal para confirmación dinámica con nombre -->
+<div id="nameModal" class="modal-overlay">
+    <div class="modal-card">
+        <h3><i class="fas fa-pen-alt"></i> Confirma Asistencia</h3>
+        <p>Escribe tu nombre para registrarte y recibir un regalo especial</p>
+        <input type="text" id="userNameInput" placeholder="Ej: Ana, Carlos, Sofía..." autocomplete="off">
+        <div class="modal-buttons">
+            <button class="modal-btn" id="confirmNameBtn"><i class="fas fa-check-circle"></i> Registrar</button>
+            <button class="modal-btn cancel" id="closeModalBtn"><i class="fas fa-times"></i> Cerrar</button>
+        </div>
+        <div id="modalFeedback"></div>
+    </div>
+</div>
+
+<script>
+    // -------- COUNTDOWN al próximo viernes 20:00 --------
+    function getNextFriday8PM() {
+        const now = new Date();
+        const currentDay = now.getDay();
+        let daysUntilFriday = (5 - currentDay + 7) % 7;
+        if (daysUntilFriday === 0) {
+            const currentHour = now.getHours();
+            const currentMin = now.getMinutes();
+            if (currentHour > 20 || (currentHour === 20 && currentMin >= 0)) {
+                daysUntilFriday = 7;
+            }
+        }
+        const nextFriday = new Date(now);
+        nextFriday.setDate(now.getDate() + daysUntilFriday);
+        nextFriday.setHours(20, 0, 0, 0);
+        return nextFriday;
+    }
+
+    function updateCountdown() {
+        const targetDate = getNextFriday8PM();
+        const now = new Date();
+        const diff = targetDate - now;
+
+        if (diff <= 0) {
+            document.getElementById('days').innerText = "00";
+            document.getElementById('hours').innerText = "00";
+            document.getElementById('minutes').innerText = "00";
+            document.getElementById('seconds').innerText = "00";
+            return;
+        }
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (86400000)) / (3600000));
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+
+        document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+        document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+        document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+        document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // -------- SORPRESAS (compartidas) --------
+    const surpriseMsgDiv = document.getElementById('surpriseMessage');
+    const surpriseTrigger = document.getElementById('surpriseTrigger');
+    const extraSurpriseBtn = document.getElementById('extraSurpriseBtn');
+
+    const surpriseMessages = [
+        "🎉 ¡SORPRESA COMPARTIDA! Este viernes tendremos regalos para los primeros 10 en llegar. ¡Todos pueden ganar! 🎁",
+        "🔥 PREMIO MISTERIOSO: Habrá una dinámica sorpresa con regalos para varios asistentes. ¡No te lo pierdas! ✨",
+        "💥 SORPRESA FLASH: Invita a 2 amigos y todos (incluyéndote) recibirán un cupón sorpresa en la entrada. 🌟",
+        "🍕 ¡PIZZA PARTY después del culto! Este viernes tendremos una deliciosa sorpresa para compartir en grupo. 🍕",
+        "🎁 Premio especial: El participante más entusiasta se llevará un gift card misterioso. ¡Sorpresa para todos!",
+        "🧩 Juego del tesoro escondido: el primer lugar gana un premio increíble, pero habrá regalos para todos los participantes. 🧩"
+    ];
+
+    function showRandomSurpriseMessage(confettiEffect = true) {
+        const randomIndex = Math.floor(Math.random() * surpriseMessages.length);
+        const msg = surpriseMessages[randomIndex];
+        surpriseMsgDiv.innerHTML = `<i class="fas fa-bolt"></i> ${msg} <i class="fas fa-laugh-beam"></i>`;
+        surpriseMsgDiv.classList.remove('hidden-message');
+        surpriseMsgDiv.classList.add('show-message');
+        if (confettiEffect) {
+            canvasConfetti({
+                particleCount: 130,
+                spread: 70,
+                origin: { y: 0.6 },
+                startVelocity: 20,
+                colors: ['#ff3b6f', '#ffd966', '#a05eff']
+            });
+            setTimeout(() => {
+                canvasConfetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 45,
+                    origin: { x: 0.2, y: 0.7 }
+                });
+                canvasConfetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 45,
+                    origin: { x: 0.8, y: 0.7 }
+                });
+            }, 150);
+        }
+    }
+
+    surpriseTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showRandomSurpriseMessage(true);
+        const icon = surpriseTrigger.querySelector('.gift-icon i');
+        if(icon) {
+            icon.style.transform = 'scale(1.3)';
+            setTimeout(() => { icon.style.transform = ''; }, 200);
+        }
+        showToast('🎁 ¡Has descubierto una sorpresa! Revisa el mensaje especial (válido para todos) 🎁');
+    });
+
+    extraSurpriseBtn.addEventListener('click', () => {
+        canvasConfetti({
+            particleCount: 200,
+            spread: 100,
+            origin: { y: 0.5 },
+            startVelocity: 25,
+            colors: ['#ff3b6f', '#ffaa44', '#44ffaa', '#b180ff']
+        });
+        canvasConfetti({
+            particleCount: 150,
+            angle: 90,
+            spread: 80,
+            origin: { x: 0.5, y: 0.6 }
+        });
+        const lightningMessages = [
+            "⚡ ¡SORPRESA RELÁMPAGO COMPARTIDA! ⚡",
+            
+        ];
+        const randLight = Math.floor(Math.random() * lightningMessages.length);
+        surpriseMsgDiv.innerHTML = `<i class="fas fa-bolt" style="color:#f0e66e;"></i> ⚡${lightningMessages[randLight]}⚡ <i class="fas fa-star"></i>`;
+        surpriseMsgDiv.classList.remove('hidden-message');
+        surpriseMsgDiv.classList.add('show-message');
+        showToast('🔥 ¡Sorpresa Relámpago Activada! Todos pueden participar 🔥');
+        if(navigator.vibrate) navigator.vibrate(200);
+    });
+
+    function showToast(message, duration = 3000) {
+        let existingToast = document.querySelector('.toast-notify');
+        if(existingToast) existingToast.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-notify';
+        toast.innerHTML = `<i class="fas fa-grin-tongue-squint"></i> ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 400);
+        }, duration);
+    }
+
+    // -------- NUEVO SISTEMA DE CONFIRMACIÓN CON NOMBRE (dinámico) --------
+    const rsvpBtn = document.getElementById('rsvpBtn');
+    const modalOverlay = document.getElementById('nameModal');
+    const userNameInput = document.getElementById('userNameInput');
+    const confirmNameBtn = document.getElementById('confirmNameBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const modalFeedback = document.getElementById('modalFeedback');
+
+    function openModal() {
+        modalOverlay.classList.add('active');
+        userNameInput.value = '';
+        modalFeedback.innerHTML = '';
+        userNameInput.focus();
+    }
+
+    function closeModal() {
+        modalOverlay.classList.remove('active');
+    }
+
+    function registerAttendance() {
+        let name = userNameInput.value.trim();
+        if (name === "") {
+            modalFeedback.innerHTML = '<div class="success-message" style="background:#5a2e3e;">⚠️ Escribe tu nombre para registrarte.</div>';
+            return;
+        }
+        // Guardar en localStorage
+        localStorage.setItem('ignite_user', name);
+        localStorage.setItem('ignite_rsvp', 'true');
+        
+        // Mostrar mensaje personalizado "¡Nombre, estás inscrito! ¡No faltes!"
+        const personalizedMsg = `✨ ¡${name}, estás inscrito(a)! ✨<br>🎉 ¡No faltes! Te esperamos este VIERNES 8PM 🎉`;
+        modalFeedback.innerHTML = `<div class="success-message">${personalizedMsg}</div>`;
+        
+        // Confeti especial
+        canvasConfetti({
+            particleCount: 180,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#ff9a3c', '#ff3b6f', '#3bc9ff']
+        });
+        
+        // Toast adicional
+        showToast(`✅ ¡Gracias ${name}! Tu lugar está asegurado. ¡No faltes! ✅`);
+        
+        // Cambiar texto del botón permanentemente para feedback visual
+        rsvpBtn.innerHTML = '<i class="fas fa-check-circle"></i> ¡Ya estás registrado! No faltes';
+        rsvpBtn.disabled = true;
+        rsvpBtn.style.opacity = '0.7';
+        rsvpBtn.style.cursor = 'default';
+        
+        // Cerrar modal después de 2 segundos
+        setTimeout(() => {
+            closeModal();
+        }, 2500);
+    }
+
+    // Abrir modal al hacer clic en el botón (si no está ya registrado)
+    function handleRSVPClick() {
+        const alreadyRegistered = localStorage.getItem('ignite_rsvp');
+        if (alreadyRegistered === 'true') {
+            const savedName = localStorage.getItem('ignite_user') || 'Amigo';
+            showToast(`🎉 ¡Hola ${savedName}! Ya confirmaste tu asistencia. ¡Nos vemos el viernes! 🎉`);
+            return;
+        }
+        openModal();
+    }
+
+    rsvpBtn.addEventListener('click', handleRSVPClick);
+    confirmNameBtn.addEventListener('click', registerAttendance);
+    closeModalBtn.addEventListener('click', closeModal);
+    
+    // Cerrar modal al hacer clic fuera del contenido
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+    });
+    
+    // Permitir Enter en el input
+    userNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') registerAttendance();
+    });
+    
+    // Si ya está registrado previamente, cambiar estado visual del botón al cargar
+    if (localStorage.getItem('ignite_rsvp') === 'true') {
+        rsvpBtn.innerHTML = '<i class="fas fa-check-circle"></i> ¡Ya estás registrado! No faltes';
+        rsvpBtn.disabled = true;
+        rsvpBtn.style.opacity = '0.7';
+        rsvpBtn.style.cursor = 'default';
+        const savedName = localStorage.getItem('ignite_user');
+        if (savedName) {
+            setTimeout(() => {
+                showToast(`✨ ¡Bienvenid@ de nuevo ${savedName}! Tu lugar está asegurado. ✨`);
+            }, 1000);
+        }
+    }
+    
+    // Pequeña bienvenida inicial con efecto
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            showToast('🎈 ¡Bienvenid@ ! Confirma tu asistencia y recibe un regalo especial 🎈');
+            canvasConfetti({
+                particleCount: 40,
+                spread: 45,
+                startVelocity: 8,
+                origin: { y: 0.9 },
+                colors: ['#ffb347', '#ff6f91']
+            });
+        }, 500);
+    });
+</script>
+</body>
+</html>
